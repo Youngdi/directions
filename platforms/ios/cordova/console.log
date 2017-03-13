@@ -1,0 +1,48 @@
+2016-02-20 15:19:32.355 Directions[2518:31481] DiskCookieStorage changing policy from 2 to 0, cookie file: file:///Users/mac/Library/Developer/CoreSimulator/Devices/F5DA92C8-BE6D-4DDA-AC87-32D69AF82119/data/Containers/Data/Application/0E3C4160-2486-4E3D-B829-C111A71ECE04/Library/Cookies/Cookies.binarycookies
+2016-02-20 15:19:32.551 Directions[2518:31481] Apache Cordova native platform version 3.9.2 is starting.
+2016-02-20 15:19:32.551 Directions[2518:31481] Multi-tasking -> Device: YES, App: YES
+2016-02-20 15:19:32.560 Directions[2518:31481] Unlimited access to network resources
+2016-02-20 15:19:32.970 Directions[2518:31481] [CDVTimer][file] 7.204950ms
+2016-02-20 15:19:33.050 Directions[2518:31481] [CDVTimer][splashscreen] 80.372036ms
+2016-02-20 15:19:33.057 Directions[2518:31481] [CDVTimer][statusbar] 6.707013ms
+2016-02-20 15:19:33.058 Directions[2518:31481] [CDVTimer][keyboard] 1.076996ms
+2016-02-20 15:19:33.059 Directions[2518:31481] [CDVTimer][TotalPluginStartup] 96.255004ms
+2016-02-20 15:19:33.957 Directions[2518:31481] Resetting plugins due to page load.
+2016-02-20 15:19:34.623 Directions[2518:31481] Finished load of: file:///Users/mac/Library/Developer/CoreSimulator/Devices/F5DA92C8-BE6D-4DDA-AC87-32D69AF82119/data/Containers/Bundle/Application/4B1A7CEA-9777-4DDB-B2F1-A2E859BA681B/Directions.app/www/index.html#/tab/home
+2016-02-20 15:19:34.756 Directions[2518:31481] No Backup Path: /Users/mac/Library/Developer/CoreSimulator/Devices/F5DA92C8-BE6D-4DDA-AC87-32D69AF82119/data/Containers/Data/Application/0E3C4160-2486-4E3D-B829-C111A71ECE04/Library/LocalDatabase
+2016-02-20 15:19:34.756 Directions[2518:31481] [sqlDB] Source: /Users/mac/Library/Developer/CoreSimulator/Devices/F5DA92C8-BE6D-4DDA-AC87-32D69AF82119/data/Containers/Bundle/Application/4B1A7CEA-9777-4DDB-B2F1-A2E859BA681B/Directions.app/www/directions.db
+2016-02-20 15:19:34.756 Directions[2518:31481] [sqlDB] Destinatiion: /Users/mac/Library/Developer/CoreSimulator/Devices/F5DA92C8-BE6D-4DDA-AC87-32D69AF82119/data/Containers/Data/Application/0E3C4160-2486-4E3D-B829-C111A71ECE04/Library/LocalDatabase/directions.db
+2016-02-20 15:19:34.927 Directions[2518:31481] THREAD WARNING: ['sqlDB'] took '171.796875' ms. Plugin should use a background thread.
+2016-02-20 15:19:34.947 Directions[2518:31481] OPEN database: directions.db
+2016-02-20 15:19:34.947 Directions[2518:31481] Initializing SQLitePlugin
+2016-02-20 15:19:34.947 Directions[2518:31481] Detected docs path: /Users/mac/Library/Developer/CoreSimulator/Devices/F5DA92C8-BE6D-4DDA-AC87-32D69AF82119/data/Containers/Data/Application/0E3C4160-2486-4E3D-B829-C111A71ECE04/Documents
+2016-02-20 15:19:34.948 Directions[2518:31481] Detected Library path: /Users/mac/Library/Developer/CoreSimulator/Devices/F5DA92C8-BE6D-4DDA-AC87-32D69AF82119/data/Containers/Data/Application/0E3C4160-2486-4E3D-B829-C111A71ECE04/Library
+2016-02-20 15:19:34.948 Directions[2518:31481] no cloud sync at path: /Users/mac/Library/Developer/CoreSimulator/Devices/F5DA92C8-BE6D-4DDA-AC87-32D69AF82119/data/Containers/Data/Application/0E3C4160-2486-4E3D-B829-C111A71ECE04/Library/LocalDatabase
+2016-02-20 15:19:34.949 Directions[2518:31785] open full db path: /Users/mac/Library/Developer/CoreSimulator/Devices/F5DA92C8-BE6D-4DDA-AC87-32D69AF82119/data/Containers/Data/Application/0E3C4160-2486-4E3D-B829-C111A71ECE04/Documents/directions.db
+2016-02-20 15:19:34.958 Directions[2518:31785] Good news: SQLite is thread safe!
+2016-02-20 15:19:35.108 Directions[2518:31481] no db
+2016-02-20 15:19:35.108 Directions[2518:31481] DB opened: directions.db
+2016-02-20 15:20:09.048 Directions[2563:32653] DiskCookieStorage changing policy from 2 to 0, cookie file: file:///Users/mac/Library/Developer/CoreSimulator/Devices/F5DA92C8-BE6D-4DDA-AC87-32D69AF82119/data/Containers/Data/Application/552FA6F9-812D-4777-8EB2-A2D171CD1EB4/Library/Cookies/Cookies.binarycookies
+2016-02-20 15:20:09.239 Directions[2563:32653] Apache Cordova native platform version 3.9.2 is starting.
+2016-02-20 15:20:09.240 Directions[2563:32653] Multi-tasking -> Device: YES, App: YES
+2016-02-20 15:20:09.246 Directions[2563:32653] Unlimited access to network resources
+2016-02-20 15:20:09.510 Directions[2563:32653] [CDVTimer][file] 8.015990ms
+2016-02-20 15:20:09.531 Directions[2563:32653] [CDVTimer][splashscreen] 19.946039ms
+2016-02-20 15:20:09.539 Directions[2563:32653] [CDVTimer][statusbar] 7.641017ms
+2016-02-20 15:20:09.540 Directions[2563:32653] [CDVTimer][keyboard] 1.572967ms
+2016-02-20 15:20:09.541 Directions[2563:32653] [CDVTimer][TotalPluginStartup] 38.569033ms
+2016-02-20 15:20:10.502 Directions[2563:32653] Resetting plugins due to page load.
+2016-02-20 15:20:11.020 Directions[2563:32653] Finished load of: file:///Users/mac/Library/Developer/CoreSimulator/Devices/F5DA92C8-BE6D-4DDA-AC87-32D69AF82119/data/Containers/Bundle/Application/36293B75-0E4E-4DDA-BD47-59734BA24107/Directions.app/www/index.html#/tab/home
+2016-02-20 15:20:11.189 Directions[2563:32653] No Backup Path: /Users/mac/Library/Developer/CoreSimulator/Devices/F5DA92C8-BE6D-4DDA-AC87-32D69AF82119/data/Containers/Data/Application/552FA6F9-812D-4777-8EB2-A2D171CD1EB4/Library/LocalDatabase
+2016-02-20 15:20:11.189 Directions[2563:32653] [sqlDB] Source: /Users/mac/Library/Developer/CoreSimulator/Devices/F5DA92C8-BE6D-4DDA-AC87-32D69AF82119/data/Containers/Bundle/Application/36293B75-0E4E-4DDA-BD47-59734BA24107/Directions.app/www/directions.db
+2016-02-20 15:20:11.190 Directions[2563:32653] [sqlDB] Destinatiion: /Users/mac/Library/Developer/CoreSimulator/Devices/F5DA92C8-BE6D-4DDA-AC87-32D69AF82119/data/Containers/Data/Application/552FA6F9-812D-4777-8EB2-A2D171CD1EB4/Library/LocalDatabase/directions.db
+2016-02-20 15:20:11.315 Directions[2563:32653] THREAD WARNING: ['sqlDB'] took '126.116943' ms. Plugin should use a background thread.
+2016-02-20 15:20:11.318 Directions[2563:32653] OPEN database: directions.db
+2016-02-20 15:20:11.319 Directions[2563:32653] Initializing SQLitePlugin
+2016-02-20 15:20:11.319 Directions[2563:32653] Detected docs path: /Users/mac/Library/Developer/CoreSimulator/Devices/F5DA92C8-BE6D-4DDA-AC87-32D69AF82119/data/Containers/Data/Application/552FA6F9-812D-4777-8EB2-A2D171CD1EB4/Documents
+2016-02-20 15:20:11.320 Directions[2563:32653] Detected Library path: /Users/mac/Library/Developer/CoreSimulator/Devices/F5DA92C8-BE6D-4DDA-AC87-32D69AF82119/data/Containers/Data/Application/552FA6F9-812D-4777-8EB2-A2D171CD1EB4/Library
+2016-02-20 15:20:11.320 Directions[2563:32653] no cloud sync at path: /Users/mac/Library/Developer/CoreSimulator/Devices/F5DA92C8-BE6D-4DDA-AC87-32D69AF82119/data/Containers/Data/Application/552FA6F9-812D-4777-8EB2-A2D171CD1EB4/Library/LocalDatabase
+2016-02-20 15:20:11.321 Directions[2563:32672] open full db path: /Users/mac/Library/Developer/CoreSimulator/Devices/F5DA92C8-BE6D-4DDA-AC87-32D69AF82119/data/Containers/Data/Application/552FA6F9-812D-4777-8EB2-A2D171CD1EB4/Documents/directions.db
+2016-02-20 15:20:11.331 Directions[2563:32672] Good news: SQLite is thread safe!
+2016-02-20 15:20:11.371 Directions[2563:32653] no db
+2016-02-20 15:20:11.372 Directions[2563:32653] DB opened: directions.db
