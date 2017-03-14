@@ -4,7 +4,6 @@ angular.module('ionicApp.controllers', [])
 .controller('HomeCtrl', function($ionicPopover, $rootScope, $cordovaDevice, $ionicLoading, $ionicPlatform, $scope, $ionicPopup, $cordovaStatusbar, $cordovaSQLite, $http, $cordovaFile, SQL) {
 
     $('.title').click(function() {
-        // alert("A");
         $scope.lesson(false);
     });
     // setTimeout(function() {
@@ -575,7 +574,7 @@ angular.module('ionicApp.controllers', [])
 
 })
 
-.controller('LessonCtrl', function($rootScope, $scope, $cordovaSQLite, $stateParams, $ionicSideMenuDelegate, Bible_api) {
+.controller('LessonCtrl', function($rootScope, $scope, $cordovaSQLite, $stateParams, $ionicSideMenuDelegate, Bible_api, $q) {
     $rootScope.font_pop = true;
     $scope.doRefresh = function() {
         LessonList_init();
@@ -587,94 +586,63 @@ angular.module('ionicApp.controllers', [])
         $cordovaSQLite.execute(db, query_user).then(function(res) {
             $scope.lang = res.rows.item(0).lang;
             if (res.rows.item(0).lang === 'cht') {
-                version_select('article_cht', 'cht');
+                return version_select('article_cht', 'cht');
             } else if (res.rows.item(0).lang === 'en') {
-                version_select('article_en', 'en');
+                return version_select('article_en', 'en');
             } else if (res.rows.item(0).lang === 'chs') {
-                version_select('article_chs', 'chs');
+                return version_select('article_chs', 'chs');
             }
         });
-
-        function version_select(article_version, lang) {
-            var query = "SELECT * FROM " + article_version + " WHERE h_where = '" + $stateParams.h_go + "' ORDER BY h_id";
-            $cordovaSQLite.execute(db, query).then(function(res) {
-                $scope.lesson_data = [];
-                var lesson_data = [];
-                for (i = 0; i < res.rows.length; i++) {
-                    lesson_data.push(res.rows.item(i));
-                }
-                $scope.lesson_data = lesson_data;
-                setTimeout(function() {
-                    $scope.$apply(function() {
-                        if (lang === 'cht') {
-                            var cht_lesson_name = Bible_api.transfer_number($stateParams.h_go.slice(1, 3));
-                            $scope.lesson_title = "第" + cht_lesson_name + "課";
-                        } else if (lang === 'en') {
-                            $scope.lesson_title = "Lesson" + $stateParams.h_go.slice(1, 3);
-                        } else if (lang === 'chs') {
-                            var chs_lesson_name = Bible_api.transfer_number($stateParams.h_go.slice(1, 3));
-                            $scope.lesson_title = "第" + chs_lesson_name + "课";
-                        }
-                    });
-                }, 500);
-            }, function(err) {
-                alert(err);
-            });
-        }
     }
-
+    function version_select(article_version, lang) {
+        var query = "SELECT * FROM " + article_version + " WHERE h_where = '" + $stateParams.h_go + "' ORDER BY h_id";
+        return $cordovaSQLite.execute(db, query).then(showLessonContent.bind(Bible_api, lang));
+    }
+    function showLessonContent (lang , res) {
+        $scope.lesson_data = [];
+        var lesson_data = [];
+        for (i = 0; i < res.rows.length; i++) {
+            lesson_data.push(res.rows.item(i));
+        }
+        $scope.lesson_data = lesson_data;
+        setTimeout(function() {
+            const lesson_title = function() {
+                if (lang ==='cht') {
+                    return  "第" + this.Bible_api.transfer_number($stateParams.h_go.slice(1, 3)) + "課";
+                } else if (lang === 'chs') {
+                    return  "第" + this.Bible_api.transfer_number($stateParams.h_go.slice(1, 3)) + "课";
+                } else if (lang === 'en'){
+                    return "Lesson" + $stateParams.h_go.slice(1, 3)
+                }
+            };
+            $scope.lesson_title = lesson_title();
+        }.bind(this), 300);
+    }
     $scope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
-
         LessonList_init();
-
     });
 
 })
 
 .controller('LessonContentCtrl', function($ionicModal, $compile, $scope, $cordovaSQLite, $stateParams, $ionicSideMenuDelegate, Bible_api ,$q) {
     
-     /*function LessonContent(callback) {
-          setting_lang();
-          setTimeout(function() {
-              callback($('#lesson_content').html());
-            }, 200);
-        };
-      function setting_lang() {
-          $scope.shareButton = true;
-          var query_user = "SELECT * FROM user_db WHERE username = 'Bill' ";
-          $cordovaSQLite.execute(db, query_user).then(function(res) {
-              if (res.rows.item(0).lang === 'cht') {
-                    // content_version_select(res.rows.item(0).lang, 'article_cht', res.rows.item(0).font_size, res.rows.item(0).font_type);
-                  return [res.rows.item(0).lang, 'article_cht', res.rows.item(0).font_size, res.rows.item(0).font_type];
-                } else if (res.rows.item(0).lang === 'en') {
-                    // content_version_select(res.rows.item(0).lang, 'article_en', res.rows.item(0).font_size, res.rows.item(0).font_type);
-                  return [res.rows.item(0).lang, 'article_en', res.rows.item(0).font_size, res.rows.item(0).font_type];
-                } else if (res.rows.item(0).lang === 'chs') {
-                   // content_version_select(res.rows.item(0).lang, 'article_chs', res.rows.item(0).font_size, res.rows.item(0).font_type);
-                  return [res.rows.item(0).lang, 'article_chs', res.rows.item(0).font_size, res.rows.item(0).font_type];
-                }
-            }).then(function(arr) {
-              content_version_select(arr[0], arr[1], arr[2], arr[3]);
-            });
-      }*/
-    function LessonContent(callback) {
-        setting_lang();
-        setTimeout(function() {
-          callback($('#lesson_content').html());
-        }, 200);
+    function LessonContent() {
+        return $q(function(resolve, reject) {
+            setting_lang();
+            setTimeout(function() {
+               resolve($('#lesson_content').html());
+            }, 200);
+        });
     }
     function setting_lang(){
         $scope.shareButton = true;
         var query_user = "SELECT * FROM user_db WHERE username = 'Bill' ";
         $cordovaSQLite.execute(db, query_user).then(function(res) {
             if (res.rows.item(0).lang === 'cht') {
-                  // content_version_select(res.rows.item(0).lang, 'article_cht', res.rows.item(0).font_size, res.rows.item(0).font_type);
                 return [res.rows.item(0).lang, 'article_cht', res.rows.item(0).font_size, res.rows.item(0).font_type];
               } else if (res.rows.item(0).lang === 'en') {
-                  // content_version_select(res.rows.item(0).lang, 'article_en', res.rows.item(0).font_size, res.rows.item(0).font_type);
                 return [res.rows.item(0).lang, 'article_en', res.rows.item(0).font_size, res.rows.item(0).font_type];
               } else if (res.rows.item(0).lang === 'chs') {
-                 // content_version_select(res.rows.item(0).lang, 'article_chs', res.rows.item(0).font_size, res.rows.item(0).font_type);
                 return [res.rows.item(0).lang, 'article_chs', res.rows.item(0).font_size, res.rows.item(0).font_type];
               }
           }).then(function(arr) {
@@ -852,46 +820,49 @@ angular.module('ionicApp.controllers', [])
                     $('textarea').css({
                         fontSize: size + 'px',
                         fontFamily: font_type
-                });
+                    });
             });
     }
-    function getLessonQuestionsAndAnswers(content, callback) {
-          var pos = content.split('<br>');
-          var check = [];
-          var answer = {
-              questions: [],
-              answers: []
-            };
-          var myAnswer = '';
-          pos.forEach(function (element, index, array) {
-              if (element.search('<textarea') === 0) {
-                  check.push(index - 1);
-                  var start = element.search('>');
-                  var end = element.search('</textarea');
-                  answer.answers.push(element.slice(start + 1, end));
-                }
-            });
-          check.forEach(function (element, inedx, array) {
-              if (pos[element].indexOf('class="bullet"') > 0) {
-                  var arr = pos[element].split('</li>');
-                  var b = arr[0].split('<li>');
-                  answer.questions.push(b[1]);
-                } else {
-                  answer.questions.push((pos[element]));
-                }
-            });
-          answer.questions.forEach(function(element, index, array) {
-              myAnswer = myAnswer + '<b>' + (index + 1 ) + '.</b><b>' + element + '</b><p>'+ answer.answers[index] +'</p>';
-            });
-          callback(myAnswer);
+
+    function getLessonQuestionsAndAnswers(content) {
+        return $q(function(resolve, reject) {
+           var pos = content.split('<br>');
+           var check = [];
+           var answer = {
+               questions: [],
+               answers: []
+             };
+           var myAnswer = '';
+           pos.forEach(function (element, index, array) {
+               if (element.search('<textarea') === 0) {
+                   check.push(index - 1);
+                   var start = element.search('>');
+                   var end = element.search('</textarea');
+                   answer.answers.push(element.slice(start + 1, end));
+                 }
+             });
+           check.forEach(function (element, inedx, array) {
+               if (pos[element].indexOf('class="bullet"') > 0) {
+                   var arr = pos[element].split('</li>');
+                   var b = arr[0].split('<li>');
+                   answer.questions.push(b[1]);
+                 } else {
+                   answer.questions.push((pos[element]));
+                 }
+             });
+           answer.questions.forEach(function(element, index, array) {
+               myAnswer = myAnswer + '<b>' + (index + 1 ) + '.</b><b>' + element + '</b><p>'+ answer.answers[index] +'</p>';
+           });
+           resolve(myAnswer);
+        });
     };
+
     $scope.shareAnywhere = function () {
-          LessonContent(function(content) {
-              getLessonQuestionsAndAnswers(content, function (myAnswer) {
-                 alert(myAnswer);
-                // $cordovaSocialSharing.shareViaEmail(myAnswer, 'Check out my answers from '+ $scope.lesson_day_title);
-               });
-            });
+        LessonContent().then(function(content) {
+           return getLessonQuestionsAndAnswers(content);
+        }).then(function(myAnswer) {
+            $cordovaSocialSharing.shareViaEmail(myAnswer, 'Check out my answers from '+ $scope.lesson_day_title);
+        });
     };
     /* const curry = (fn, ...args1) =>  (...args2) => fn(...args1, ...args2);
     function curry(fn, ...args1) {
