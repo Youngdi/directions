@@ -1,2 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merger version="3"><dataSet config="main"><source path="/Users/mac/Desktop/myApp_sqlite/platforms/android/CordovaLib/assets"/></dataSet><dataSet config="release"><source path="/Users/mac/Desktop/myApp_sqlite/platforms/android/CordovaLib/src/release/assets"/></dataSet></merger>
+<merger version="3"><dataSet config="main"><source path="/Users/yang/Desktop/directions_App_sqlite _bio_IOS_EN/platforms/android/CordovaLib/assets"/></dataSet><dataSet config="release"><source path="/Users/yang/Desktop/directions_App_sqlite _bio_IOS_EN/platforms/android/CordovaLib/src/release/assets"/></dataSet></merger>
