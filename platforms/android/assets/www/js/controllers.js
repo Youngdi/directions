@@ -4,7 +4,6 @@ angular.module('ionicApp.controllers', [])
 .controller('HomeCtrl', function($ionicPopover, $rootScope, $cordovaDevice, $ionicLoading, $ionicPlatform, $scope, $ionicPopup, $cordovaStatusbar, $cordovaSQLite, $http, $cordovaFile, SQL) {
 
     $('.title').click(function() {
-        // alert("A");
         $scope.lesson(false);
     });
     // setTimeout(function() {
@@ -575,7 +574,7 @@ angular.module('ionicApp.controllers', [])
 
 })
 
-.controller('LessonCtrl', function($rootScope, $scope, $cordovaSQLite, $stateParams, $ionicSideMenuDelegate, Bible_api) {
+.controller('LessonCtrl', function($rootScope, $scope, $cordovaSQLite, $stateParams, $ionicSideMenuDelegate, Bible_api, $q) {
     $rootScope.font_pop = true;
     $scope.doRefresh = function() {
         LessonList_init();
@@ -587,142 +586,103 @@ angular.module('ionicApp.controllers', [])
         $cordovaSQLite.execute(db, query_user).then(function(res) {
             $scope.lang = res.rows.item(0).lang;
             if (res.rows.item(0).lang === 'cht') {
-                version_select('article_cht', 'cht');
+                return version_select('article_cht', 'cht');
             } else if (res.rows.item(0).lang === 'en') {
-                version_select('article_en', 'en');
+                return version_select('article_en', 'en');
             } else if (res.rows.item(0).lang === 'chs') {
-                version_select('article_chs', 'chs');
+                return version_select('article_chs', 'chs');
             }
         });
-
-        function version_select(article_version, lang) {
-            var query = "SELECT * FROM " + article_version + " WHERE h_where = '" + $stateParams.h_go + "' ORDER BY h_id";
-            $cordovaSQLite.execute(db, query).then(function(res) {
-                $scope.lesson_data = [];
-                var lesson_data = [];
-                for (i = 0; i < res.rows.length; i++) {
-                    lesson_data.push(res.rows.item(i));
-                }
-                $scope.lesson_data = lesson_data;
-                setTimeout(function() {
-                    $scope.$apply(function() {
-                        if (lang === 'cht') {
-                            var cht_lesson_name = Bible_api.transfer_number($stateParams.h_go.slice(1, 3));
-                            $scope.lesson_title = "第" + cht_lesson_name + "課";
-                        } else if (lang === 'en') {
-                            $scope.lesson_title = "Lesson" + $stateParams.h_go.slice(1, 3);
-                        } else if (lang === 'chs') {
-                            var chs_lesson_name = Bible_api.transfer_number($stateParams.h_go.slice(1, 3));
-                            $scope.lesson_title = "第" + chs_lesson_name + "课";
-                        }
-                    });
-                }, 500);
-            }, function(err) {
-                alert(err);
-            });
-        }
     }
-
+    function version_select(article_version, lang) {
+        var query = "SELECT * FROM " + article_version + " WHERE h_where = '" + $stateParams.h_go + "' ORDER BY h_id";
+        return $cordovaSQLite.execute(db, query).then(showLessonContent.bind(Bible_api, lang));
+    }
+    function showLessonContent (lang , res) {
+        $scope.lesson_data = [];
+        var lesson_data = [];
+        for (i = 0; i < res.rows.length; i++) {
+            lesson_data.push(res.rows.item(i));
+        }
+        $scope.lesson_data = lesson_data;
+        setTimeout(function() {
+            const lesson_title = function() {
+                if (lang ==='cht') {
+                    return  "第" + this.Bible_api.transfer_number($stateParams.h_go.slice(1, 3)) + "課";
+                } else if (lang === 'chs') {
+                    return  "第" + this.Bible_api.transfer_number($stateParams.h_go.slice(1, 3)) + "课";
+                } else if (lang === 'en'){
+                    return "Lesson" + $stateParams.h_go.slice(1, 3)
+                }
+            };
+            $scope.lesson_title = lesson_title();
+        }.bind(this), 300);
+    }
     $scope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
-
         LessonList_init();
-
     });
 
 })
 
-.controller('LessonContentCtrl', function($ionicModal, $compile, $scope, $cordovaSQLite, $stateParams, $ionicSideMenuDelegate, Bible_api) {
-
+.controller('LessonContentCtrl', function($ionicModal, $compile, $scope, $cordovaSQLite, $stateParams, $ionicSideMenuDelegate, Bible_api , $q, $cordovaSocialSharing) {
+    
     function LessonContent() {
+        return $q(function(resolve, reject) {
+            setting_lang();
+            setTimeout(function() {
+               resolve($('#lesson_content').html());
+            }, 200);
+        });
+    }
+    function setting_lang(){
+        $scope.shareButton = true;
         var query_user = "SELECT * FROM user_db WHERE username = 'Bill' ";
         $cordovaSQLite.execute(db, query_user).then(function(res) {
-            if (res.rows.item(0).lang === 'cht') {
-                version_select(res.rows.item(0).lang, 'article_cht', res.rows.item(0).font_size, res.rows.item(0).font_type);
-            } else if (res.rows.item(0).lang === 'en') {
-                version_select(res.rows.item(0).lang, 'article_en', res.rows.item(0).font_size, res.rows.item(0).font_type);
-            } else if (res.rows.item(0).lang === 'chs') {
-                version_select(res.rows.item(0).lang, 'article_chs', res.rows.item(0).font_size, res.rows.item(0).font_type);
-            }
-        });
-
-        function version_select(lang, article_version, size, font_type) {
+            if (res.rows.item(0).lang === 'cht') {
+                return [res.rows.item(0).lang, 'article_cht', res.rows.item(0).font_size, res.rows.item(0).font_type];
+              } else if (res.rows.item(0).lang === 'en') {
+                return [res.rows.item(0).lang, 'article_en', res.rows.item(0).font_size, res.rows.item(0).font_type];
+              } else if (res.rows.item(0).lang === 'chs') {
+                return [res.rows.item(0).lang, 'article_chs', res.rows.item(0).font_size, res.rows.item(0).font_type];
+              }
+          }).then(function(arr) {
+            content_version_select(arr[0], arr[1], arr[2], arr[3]);
+          });
+    }
+    function content_version_select(lang, article_version, size, font_type) {
             $('#lesson_content').empty();
             var query = "SELECT * FROM " + article_version + " WHERE h_where = '" + $stateParams.h_go + "' ORDER BY h_id";
             $cordovaSQLite.execute(db, query).then(function(res) {
-                var html = "";
-                var temp;
-                B_id = 1;
-                B_flag = 1;
-                textarea = 0;
-                table_count = 1;
-                for (i = 0; i < res.rows.length; i++) {
-                    switch (res.rows.item(i).h_format) {
-                        case 0:
-                            html = '<hr>';
-                            temp = $compile(html)($scope);
-                            angular.element(document.getElementById('lesson_content')).append(temp);
-                            html = "";
-                            temp = "";
-                            break;
-                        case 1:
-                            html = '<center><b>' + res.rows.item(i).h_text + '</b></center><br>';
-                            temp = $compile(html)($scope);
-                            angular.element(document.getElementById('lesson_content')).append(temp);
-                            html = "";
-                            temp = "";
-                            break;
-                        case 2:
-                            html = '<BP>' + res.rows.item(i).h_text + '</BP>';
-                            temp = $compile(html)($scope);
-                            angular.element(document.getElementById('lesson_content')).append(temp);
-                            html = "";
-                            temp = "";
-                            break;
-                        case 3:
-                            if (lang === 'en') {
-                                html = '<a ng-click="Bible(\'' + res.rows.item(i).h_key + '\',\'kjv\',\'' + res.rows.item(i).h_key + '\')" style="text-decoration:none;">' + res.rows.item(i).h_text + '</a><a ng-click="Bible(\'' + res.rows.item(i).h_key + '\',\'cht\',\'' + res.rows.item(i).h_desc + '\')" style="text-decoration:none;"> ｜ [中] </a>';
+                    var html = "";
+                    var temp;
+                    B_id = 1;
+                    B_flag = 1;
+                    textarea = 0;
+                    table_count = 1;
+                    for (i = 0; i < res.rows.length; i++) {
+                        switch (res.rows.item(i).h_format) {
+                            case 0:
+                                html = '<hr>';
                                 temp = $compile(html)($scope);
                                 angular.element(document.getElementById('lesson_content')).append(temp);
                                 html = "";
                                 temp = "";
-                            } else if (lang === 'cht') {
-                                html = '<a ng-click="Bible(\'' + res.rows.item(i).h_key + '\',\'cht\',\'' + res.rows.item(i).h_desc + '\')" style="text-decoration:none;">' + res.rows.item(i).h_text + '</a><a ng-click="Bible(\'' + res.rows.item(i).h_key + '\',\'kjv\',\'' + res.rows.item(i).h_key + '\')" style="text-decoration:none;"> ｜ [英] </a>';
+                                break;
+                            case 1:
+                                html = '<center><b>' + res.rows.item(i).h_text + '</b></center><br>';
                                 temp = $compile(html)($scope);
                                 angular.element(document.getElementById('lesson_content')).append(temp);
                                 html = "";
                                 temp = "";
-                            } else if (lang === 'chs') {
-                                html = '<a ng-click="Bible(\'' + res.rows.item(i).h_key + '\',\'chs\',\'' + res.rows.item(i).h_desc + '\')" style="text-decoration:none;">' + res.rows.item(i).h_text + '</a><a ng-click="Bible(\'' + res.rows.item(i).h_key + '\',\'kjv\',\'' + res.rows.item(i).h_key + '\')" style="text-decoration:none;"> ｜ [英] </a>';
-                                temp = $compile(html)($scope);
-                                angular.element(document.getElementById('lesson_content')).append(temp);
-                                html = "";
-                                temp = "";
-                            }
-                            B_id++;
-                            break;
-                        case 4:
-                            html = '<p>' + res.rows.item(i).h_text + '</p><br>';
-                            temp = $compile(html)($scope);
-                            angular.element(document.getElementById('lesson_content')).append(temp);
-                            html = "";
-                            temp = "";
-                            break;
-                        case 5:
-                            html = '<ul class="bullet" ><li>' + res.rows.item(i).h_text + '</li></ul><br>';
-                            temp = $compile(html)($scope);
-                            angular.element(document.getElementById('lesson_content')).append(temp);
-                            html = "";
-                            temp = "";
-                            break;
-                        case 6:
-                            if (B_flag == 1) {
+                                break;
+                            case 2:
                                 html = '<BP>' + res.rows.item(i).h_text + '</BP>';
                                 temp = $compile(html)($scope);
                                 angular.element(document.getElementById('lesson_content')).append(temp);
                                 html = "";
                                 temp = "";
-                                B_flag++;
-                            } else if (B_flag == 2) {
+                                break;
+                            case 3:
                                 if (lang === 'en') {
                                     html = '<a ng-click="Bible(\'' + res.rows.item(i).h_key + '\',\'kjv\',\'' + res.rows.item(i).h_key + '\')" style="text-decoration:none;">' + res.rows.item(i).h_text + '</a><a ng-click="Bible(\'' + res.rows.item(i).h_key + '\',\'cht\',\'' + res.rows.item(i).h_desc + '\')" style="text-decoration:none;"> ｜ [中] </a>';
                                     temp = $compile(html)($scope);
@@ -742,86 +702,179 @@ angular.module('ionicApp.controllers', [])
                                     html = "";
                                     temp = "";
                                 }
-                                B_flag++;
                                 B_id++;
-                            } else if (B_flag == 3) {
-                                html = '<BP>' + res.rows.item(i).h_text + '</BP><p></p><br>';
+                                break;
+                            case 4:
+                                html = '<p>' + res.rows.item(i).h_text + '</p><br>';
                                 temp = $compile(html)($scope);
                                 angular.element(document.getElementById('lesson_content')).append(temp);
                                 html = "";
                                 temp = "";
-                                B_flag = 1;
-                            }
-                            break;
-                        case 7:
-                            html = '<textarea style="height:80px;" id=' + res.rows.item(i).h_id + '  ng-keyup="autoExpand($event)" name =' + $stateParams.h_go + article_version + '></textarea><br>';
-                            temp = $compile(html)($scope);
-                            angular.element(document.getElementById('lesson_content')).append(temp);
-                            angular.element(document.getElementById(res.rows.item(i).h_id)).append(res.rows.item(i).h_text);
-                            html = "";
-                            temp = "";
-                            textarea++;
-                            break;
+                                break;
+                            case 5:
+                                html = '<ul class="bullet" ><li>' + res.rows.item(i).h_text + '</li></ul><br>';
+                                temp = $compile(html)($scope);
+                                angular.element(document.getElementById('lesson_content')).append(temp);
+                                html = "";
+                                temp = "";
+                                break;
+                            case 6:
+                                if (B_flag == 1) {
+                                    html = '<BP>' + res.rows.item(i).h_text + '</BP>';
+                                    temp = $compile(html)($scope);
+                                    angular.element(document.getElementById('lesson_content')).append(temp);
+                                    html = "";
+                                    temp = "";
+                                    B_flag++;
+                                } else if (B_flag == 2) {
+                                    if (lang === 'en') {
+                                        html = '<a ng-click="Bible(\'' + res.rows.item(i).h_key + '\',\'kjv\',\'' + res.rows.item(i).h_key + '\')" style="text-decoration:none;">' + res.rows.item(i).h_text + '</a><a ng-click="Bible(\'' + res.rows.item(i).h_key + '\',\'cht\',\'' + res.rows.item(i).h_desc + '\')" style="text-decoration:none;"> ｜ [中] </a>';
+                                        temp = $compile(html)($scope);
+                                        angular.element(document.getElementById('lesson_content')).append(temp);
+                                        html = "";
+                                        temp = "";
+                                    } else if (lang === 'cht') {
+                                        html = '<a ng-click="Bible(\'' + res.rows.item(i).h_key + '\',\'cht\',\'' + res.rows.item(i).h_desc + '\')" style="text-decoration:none;">' + res.rows.item(i).h_text + '</a><a ng-click="Bible(\'' + res.rows.item(i).h_key + '\',\'kjv\',\'' + res.rows.item(i).h_key + '\')" style="text-decoration:none;"> ｜ [英] </a>';
+                                        temp = $compile(html)($scope);
+                                        angular.element(document.getElementById('lesson_content')).append(temp);
+                                        html = "";
+                                        temp = "";
+                                    } else if (lang === 'chs') {
+                                        html = '<a ng-click="Bible(\'' + res.rows.item(i).h_key + '\',\'chs\',\'' + res.rows.item(i).h_desc + '\')" style="text-decoration:none;">' + res.rows.item(i).h_text + '</a><a ng-click="Bible(\'' + res.rows.item(i).h_key + '\',\'kjv\',\'' + res.rows.item(i).h_key + '\')" style="text-decoration:none;"> ｜ [英] </a>';
+                                        temp = $compile(html)($scope);
+                                        angular.element(document.getElementById('lesson_content')).append(temp);
+                                        html = "";
+                                        temp = "";
+                                    }
+                                    B_flag++;
+                                    B_id++;
+                                } else if (B_flag == 3) {
+                                    html = '<BP>' + res.rows.item(i).h_text + '</BP><p></p><br>';
+                                    temp = $compile(html)($scope);
+                                    angular.element(document.getElementById('lesson_content')).append(temp);
+                                    html = "";
+                                    temp = "";
+                                    B_flag = 1;
+                                }
+                                break;
+                            case 7:
+                                html = '<textarea style="height:80px;" id=' + res.rows.item(i).h_id + '  ng-keyup="autoExpand($event)" name =' + $stateParams.h_go + article_version + '></textarea><br>';
+                                temp = $compile(html)($scope);
+                                angular.element(document.getElementById('lesson_content')).append(temp);
+                                angular.element(document.getElementById(res.rows.item(i).h_id)).append(res.rows.item(i).h_text);
+                                html = "";
+                                temp = "";
+                                textarea++;
+                                break;
 
-                        case 8:
-                            html = '<div class="table_border">' + res.rows.item(i).h_text + '</div><br>';
-                            temp = $compile(html)($scope);
-                            angular.element(document.getElementById('lesson_content')).append(temp);
-                            html = "";
-                            temp = "";
-                            break;
-                        case 9:
-                            if (table_count == 1) {
-                                html = '<div class="table_border">' + res.rows.item(i).h_text + '</div>';
-                                temp = $compile(html)($scope);
-                                angular.element(document.getElementById('lesson_content')).append(temp);
-                                html = "";
-                                temp = "";
-                                table_count++;
-                            } else if (table_count == 2) {
+                            case 8:
                                 html = '<div class="table_border">' + res.rows.item(i).h_text + '</div><br>';
                                 temp = $compile(html)($scope);
                                 angular.element(document.getElementById('lesson_content')).append(temp);
                                 html = "";
                                 temp = "";
-                                table_count = 1;
-                            }
-                            break;
-                        case 10:
-                            html = '<BP>' + res.rows.item(i).h_text + ' </BP><p></p><br>';
-                            temp = $compile(html)($scope);
-                            angular.element(document.getElementById('lesson_content')).append(temp);
-                            html = "";
-                            temp = "";
-                            break;
-                        case 11:
-                            html = '<B> ' + res.rows.item(i).h_text + ' </B><br>';
-                            temp = $compile(html)($scope);
-                            angular.element(document.getElementById('lesson_content')).append(temp);
-                            html = "";
-                            temp = "";
-                            break;
+                                break;
+                            case 9:
+                                if (table_count == 1) {
+                                    html = '<div class="table_border">' + res.rows.item(i).h_text + '</div>';
+                                    temp = $compile(html)($scope);
+                                    angular.element(document.getElementById('lesson_content')).append(temp);
+                                    html = "";
+                                    temp = "";
+                                    table_count++;
+                                } else if (table_count == 2) {
+                                    html = '<div class="table_border">' + res.rows.item(i).h_text + '</div><br>';
+                                    temp = $compile(html)($scope);
+                                    angular.element(document.getElementById('lesson_content')).append(temp);
+                                    html = "";
+                                    temp = "";
+                                    table_count = 1;
+                                }
+                                break;
+                            case 10:
+                                html = '<BP>' + res.rows.item(i).h_text + ' </BP><p></p><br>';
+                                temp = $compile(html)($scope);
+                                angular.element(document.getElementById('lesson_content')).append(temp);
+                                html = "";
+                                temp = "";
+                                break;
+                            case 11:
+                                html = '<B> ' + res.rows.item(i).h_text + ' </B><br>';
+                                temp = $compile(html)($scope);
+                                angular.element(document.getElementById('lesson_content')).append(temp);
+                                html = "";
+                                temp = "";
+                                break;
+                        }
                     }
-                }
-                setTimeout(function() {
-                    $scope.$apply(function() {
-                        $scope.lesson_day_title = res.rows.item(0).h_text;
+                    setTimeout(function() {
+                        $scope.$apply(function() {
+                            $scope.lesson_day_title = res.rows.item(0).h_text;
+                            $scope.shareButton = false;
+                        });
+                    }, 400);
+                    $('#lesson_content').css({
+                        fontSize: size + 'px',
+                        fontFamily: font_type
                     });
-                }, 600);
-                $('#lesson_content').css({
-                    fontSize: size + 'px',
-                    fontFamily: font_type
-                });
-                $('textarea').css({
-                    fontSize: size + 'px',
-                    fontFamily: font_type
-                });
-            }, function(err) {
-                alert(err);
+                    $('textarea').css({
+                        fontSize: size + 'px',
+                        fontFamily: font_type
+                    });
             });
-        }
     }
-    $scope.autoExpand = function(e) {
+
+    function getLessonQuestionsAndAnswers(content) {
+        return $q(function(resolve, reject) {
+           var pos = content.split('<br>');
+           var check = [];
+           var answer = {
+               questions: [],
+               answers: []
+             };
+           var myAnswer = '';
+           pos.forEach(function (element, index, array) {
+               if (element.search('<textarea') === 0) {
+                   check.push(index - 1);
+                   var start = element.search('>');
+                   var end = element.search('</textarea');
+                   answer.answers.push(element.slice(start + 1, end));
+                 }
+             });
+           check.forEach(function (element, inedx, array) {
+               if (pos[element].indexOf('class="bullet"') > 0) {
+                   var arr = pos[element].split('</li>');
+                   var b = arr[0].split('<li>');
+                   answer.questions.push(b[1]);
+                 } else {
+                   answer.questions.push((pos[element]));
+                 }
+             });
+           answer.questions.forEach(function(element, index, array) {
+               myAnswer = myAnswer + '<b>' + (index + 1 ) + '.</b><b>' + element + '</b><p>'+ answer.answers[index] +'</p>';
+           });
+           resolve(myAnswer);
+        });
+    };
+
+    $scope.shareAnywhere = function () {
+        LessonContent().then(function(content) {
+           return getLessonQuestionsAndAnswers(content);
+        }).then(function(myAnswer) {
+            $cordovaSocialSharing.shareViaEmail(myAnswer, 'Check out my answers from '+ $scope.lesson_day_title);
+        });
+    };
+    /* const curry = (fn, ...args1) =>  (...args2) => fn(...args1, ...args2);
+    function curry(fn, ...args1) {
+        return (...args2) => fn(...args1, ...args2);
+    }
+    const dbquery = (connection,sql) =>{
+        return 1
+    }*/
+    // const dbqueryWithConnection = curry(dbquery,connection);
+    // dbqueryWithConnection(sql)
+
+  $scope.autoExpand = function(e) {
 
         var element = typeof e === 'object' ? e.target : document.getElementById(e);
         var scrollHeight = element.scrollHeight; // replace 60 by the sum of padding-top and padding-bottom
@@ -834,8 +887,8 @@ angular.module('ionicApp.controllers', [])
         console.log(version);
         var query = "UPDATE '" + version + "' SET h_text = '" + element.value + "' WHERE h_where = " + h_where + " AND h_format = 7 AND h_id = " + element.id + "";
         $cordovaSQLite.execute(db, query).then(function(res) {});
-    };
-    $scope.Bible = function(passage, version, P_title) {
+  };
+  $scope.Bible = function(passage, version, P_title) {
         setTimeout(function() {
             var query_user = "SELECT * FROM user_db WHERE username = 'Bill' ";
             $cordovaSQLite.execute(db, query_user).then(function(res) {

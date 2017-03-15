@@ -624,7 +624,7 @@ angular.module('ionicApp.controllers', [])
 
 })
 
-.controller('LessonContentCtrl', function($ionicModal, $compile, $scope, $cordovaSQLite, $stateParams, $ionicSideMenuDelegate, Bible_api ,$q) {
+.controller('LessonContentCtrl', function($ionicModal, $compile, $scope, $cordovaSQLite, $stateParams, $ionicSideMenuDelegate, Bible_api , $q, $cordovaSocialSharing) {
     
     function LessonContent() {
         return $q(function(resolve, reject) {
