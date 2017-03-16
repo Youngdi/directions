@@ -17,7 +17,7 @@
        under the License.
  */
 
-package com.team4twionic.direction.bio;
+package com.KMBT.direction.EN.BIO;
 
 import android.os.Bundle;
 import org.apache.cordova.*;

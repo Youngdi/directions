@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="com.team4twionic.direction.bio" version="0.0.5" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-  <name>Directions</name>
+<widget id="com.KMBT.direction.EN.BIO" version="0.0.6" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+  <name>方向指引中英版</name>
   <author email="u9951062@gmail.com" href="">
       YoungDi
     </author>
